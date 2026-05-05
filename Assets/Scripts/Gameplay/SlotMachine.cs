@@ -28,8 +28,8 @@ public class SlotMachine : MonoBehaviour
     [SerializeField] private Transform[] reels = new Transform[3];
     [SerializeField] private Image[] reelImages = new Image[3];
     [SerializeField] private Sprite[] symbols = new Sprite[4];
-    [SerializeField] private float spinDuration = 2f;
-    [SerializeField] private int spinSpeed = 10;
+    [SerializeField] private float spinDuration = 5f;
+    [SerializeField] private float updateInterval = 0.1f; // How often to change symbols (in seconds)
 
     private bool isSpinning = false;
     private int[] currentReelValues = new int[3];
@@ -60,6 +60,7 @@ public class SlotMachine : MonoBehaviour
         for (int i = 0; i < currentReelValues.Length; i++)
         {
             currentReelValues[i] = Random.Range(0, 4);
+            UpdateReelDisplay(i, currentReelValues[i]);
         }
     }
 
@@ -80,19 +81,29 @@ public class SlotMachine : MonoBehaviour
     {
         isSpinning = true;
 
+        // Spin animation with consistent timing
         float elapsedTime = 0f;
+        float nextUpdateTime = updateInterval;
+
         while (elapsedTime < spinDuration)
         {
-            for (int i = 0; i < reels.Length; i++)
+            elapsedTime += Time.deltaTime;
+
+            // Only update display at intervals
+            if (elapsedTime >= nextUpdateTime)
             {
-                currentReelValues[i] = (currentReelValues[i] + spinSpeed) % 4;
-                UpdateReelDisplay(i, currentReelValues[i]);
+                for (int i = 0; i < reels.Length; i++)
+                {
+                    currentReelValues[i] = (currentReelValues[i] + 1) % 4;
+                    UpdateReelDisplay(i, currentReelValues[i]);
+                }
+                nextUpdateTime += updateInterval;
             }
 
-            elapsedTime += Time.deltaTime;
             yield return null;
         }
 
+        // Set final random values
         for (int i = 0; i < currentReelValues.Length; i++)
         {
             currentReelValues[i] = Random.Range(0, 4);
