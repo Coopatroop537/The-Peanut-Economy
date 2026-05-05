@@ -1,10 +1,33 @@
 using UnityEngine;
+using UnityEngine.UI;
 using System.Collections;
 using System.Collections.Generic;
 
 public class SlotMachine : MonoBehaviour
 {
+    // =========================
+    // Singleton
+    // =========================
+    private static SlotMachine _instance;
+
+    public static SlotMachine Instance
+    {
+        get
+        {
+            if (_instance == null)
+            {
+                _instance = Object.FindAnyObjectByType<SlotMachine>();
+            }
+            return _instance;
+        }
+    }
+
+    // =========================
+    // Serialized Fields
+    // =========================
     [SerializeField] private Transform[] reels = new Transform[3];
+    [SerializeField] private Image[] reelImages = new Image[3];
+    [SerializeField] private Sprite[] symbols = new Sprite[4];
     [SerializeField] private float spinDuration = 2f;
     [SerializeField] private int spinSpeed = 10;
 
@@ -15,6 +38,18 @@ public class SlotMachine : MonoBehaviour
     public delegate void SpinCompleteDelegate(int[] results, int winAmount);
     public event SpinCompleteDelegate OnSpinComplete;
 
+    private void Awake()
+    {
+        if (_instance == null)
+        {
+            _instance = this;
+        }
+        else if (_instance != this)
+        {
+            Destroy(gameObject);
+        }
+    }
+
     private void Start()
     {
         InitializeReels();
@@ -24,7 +59,7 @@ public class SlotMachine : MonoBehaviour
     {
         for (int i = 0; i < currentReelValues.Length; i++)
         {
-            currentReelValues[i] = Random.Range(0, 10);
+            currentReelValues[i] = Random.Range(0, 4);
         }
     }
 
@@ -45,26 +80,25 @@ public class SlotMachine : MonoBehaviour
     {
         isSpinning = true;
 
-        // Spin animation
         float elapsedTime = 0f;
         while (elapsedTime < spinDuration)
         {
             for (int i = 0; i < reels.Length; i++)
             {
-                currentReelValues[i] = (currentReelValues[i] + spinSpeed) % 10;
+                currentReelValues[i] = (currentReelValues[i] + spinSpeed) % 4;
                 UpdateReelDisplay(i, currentReelValues[i]);
             }
+
             elapsedTime += Time.deltaTime;
             yield return null;
         }
 
-        // Final values
         for (int i = 0; i < currentReelValues.Length; i++)
         {
-            currentReelValues[i] = Random.Range(0, 10);
+            currentReelValues[i] = Random.Range(0, 4);
+            UpdateReelDisplay(i, currentReelValues[i]);
         }
 
-        // Calculate winnings
         int winAmount = CalculateWinnings(betAmount);
         ApplyCardEffects(ref winAmount);
 
@@ -79,14 +113,14 @@ public class SlotMachine : MonoBehaviour
 
     private int CalculateWinnings(int betAmount)
     {
-        // Three of a kind = 3x bet
-        if (currentReelValues[0] == currentReelValues[1] && currentReelValues[1] == currentReelValues[2])
+        if (currentReelValues[0] == currentReelValues[1] &&
+            currentReelValues[1] == currentReelValues[2])
         {
             return betAmount * 3;
         }
 
-        // Two of a kind = 1.5x bet
-        if (currentReelValues[0] == currentReelValues[1] || currentReelValues[1] == currentReelValues[2])
+        if (currentReelValues[0] == currentReelValues[1] ||
+            currentReelValues[1] == currentReelValues[2])
         {
             return (int)(betAmount * 1.5f);
         }
@@ -103,9 +137,11 @@ public class SlotMachine : MonoBehaviour
                 case CardEffect.MultiplierBonus:
                     winAmount = (int)(winAmount * 1.25f);
                     break;
+
                 case CardEffect.PeanutMultiplier:
                     winAmount *= 2;
                     break;
+
                 case CardEffect.DoubleOrNothing:
                     winAmount *= 2;
                     break;
@@ -125,8 +161,10 @@ public class SlotMachine : MonoBehaviour
 
     private void UpdateReelDisplay(int reelIndex, int value)
     {
-        // Update UI to show current reel value
-        // This will be connected to UI elements
+        if (reelImages[reelIndex] != null && value >= 0 && value < symbols.Length)
+        {
+            reelImages[reelIndex].sprite = symbols[value];
+        }
     }
 
     public bool IsSpinning => isSpinning;
