@@ -68,6 +68,13 @@ public class SlotMachine : MonoBehaviour
     {
         if (isSpinning) return;
 
+        // Check if PeanutManager exists
+        if (PeanutManager.Instance == null)
+        {
+            Debug.Log("PeanutManager not found!");
+            return;
+        }
+
         if (!PeanutManager.Instance.SpendPeanuts(betAmount))
         {
             Debug.Log("Not enough peanuts!");
@@ -115,7 +122,10 @@ public class SlotMachine : MonoBehaviour
 
         if (winAmount > 0)
         {
-            PeanutManager.Instance.AddPeanuts(winAmount);
+            if (PeanutManager.Instance != null)
+            {
+                PeanutManager.Instance.AddPeanuts(winAmount);
+            }
         }
 
         isSpinning = false;
