@@ -7,12 +7,22 @@ public class UIManager : MonoBehaviour
     [SerializeField] private TextMeshProUGUI resultText;
     [SerializeField] private GameObject shopPanel;
     [SerializeField] private GameObject spinPanel;
+    [SerializeField] private KeyCode shopToggleKey = KeyCode.S;
 
     private void Start()
     {
         PeanutManager.Instance.OnPeanutChanged += UpdatePeanutDisplay;
         SlotMachine.Instance.OnSpinComplete += OnSpinComplete;
         ShopManager.Instance.OnShopRefreshed += OnShopRefreshed;
+    }
+
+    private void Update()
+    {
+        // Toggle shop with keyboard input (default: S key)
+        if (Input.GetKeyDown(shopToggleKey))
+        {
+            ToggleShop();
+        }
     }
 
     private void UpdatePeanutDisplay(int amount)
