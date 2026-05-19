@@ -11,7 +11,10 @@ public class ShopDisplay : MonoBehaviour
 
     private void Start()
     {
-        ShopManager.Instance.OnShopRefreshed += DisplayShopCards;
+        if (ShopManager.Instance != null)
+        {
+            ShopManager.Instance.OnShopRefreshed += DisplayShopCards;
+        }
         
         if (refreshButton != null)
         {
@@ -21,8 +24,26 @@ public class ShopDisplay : MonoBehaviour
 
     private void DisplayShopCards(List<Card> cards)
     {
-        // Clear existing cards from display
+        // Null check for shopContent
+        if (shopContent == null)
+        {
+            Debug.LogError("Shop Content is not assigned!");
+            return;
+        }
+
+        if (shopCardPrefab == null)
+        {
+            Debug.LogError("Shop Card Prefab is not assigned!");
+            return;
+        }
+
+        // Clear existing cards from display - store children first to avoid iteration issues
+        List<Transform> childrenToDestroy = new List<Transform>();
         foreach (Transform child in shopContent)
+        {
+            childrenToDestroy.Add(child);
+        }
+        foreach (Transform child in childrenToDestroy)
         {
             Destroy(child.gameObject);
         }
@@ -34,22 +55,46 @@ public class ShopDisplay : MonoBehaviour
             GameObject cardUI = Instantiate(shopCardPrefab, shopContent);
             
             // Setup card display
-            TextMeshProUGUI cardNameText = cardUI.transform.Find("CardName").GetComponent<TextMeshProUGUI>();
-            TextMeshProUGUI cardDescText = cardUI.transform.Find("CardDescription").GetComponent<TextMeshProUGUI>();
-            TextMeshProUGUI cardCostText = cardUI.transform.Find("CardCost").GetComponent<TextMeshProUGUI>();
-            Button buyButton = cardUI.transform.Find("BuyButton").GetComponent<Button>();
+            Transform cardNameObj = cardUI.transform.Find("CardName");
+            Transform cardDescObj = cardUI.transform.Find("CardDescription");
+            Transform cardCostObj = cardUI.transform.Find("CardCost");
+            Transform buyButtonObj = cardUI.transform.Find("BuyButton");
 
-            cardNameText.text = card.cardName;
-            cardDescText.text = card.description;
-            cardCostText.text = "Cost: " + card.cost + " peanuts";
+            if (cardNameObj != null)
+            {
+                TextMeshProUGUI cardNameText = cardNameObj.GetComponent<TextMeshProUGUI>();
+                if (cardNameText != null) cardNameText.text = card.cardName;
+            }
 
-            int slotIndex = i;
-            buyButton.onClick.AddListener(() => OnBuyButtonClicked(slotIndex));
+            if (cardDescObj != null)
+            {
+                TextMeshProUGUI cardDescText = cardDescObj.GetComponent<TextMeshProUGUI>();
+                if (cardDescText != null) cardDescText.text = card.description;
+            }
+
+            if (cardCostObj != null)
+            {
+                TextMeshProUGUI cardCostText = cardCostObj.GetComponent<TextMeshProUGUI>();
+                if (cardCostText != null) cardCostText.text = "Cost: " + card.cost + " peanuts";
+            }
+
+            if (buyButtonObj != null)
+            {
+                Button buyButton = buyButtonObj.GetComponent<Button>();
+                if (buyButton != null)
+                {
+                    int slotIndex = i;
+                    buyButton.onClick.AddListener(() => OnBuyButtonClicked(slotIndex));
+                }
+            }
         }
     }
 
     private void OnBuyButtonClicked(int slotIndex)
     {
-        ShopManager.Instance.PurchaseCard(slotIndex);
+        if (ShopManager.Instance != null)
+        {
+            ShopManager.Instance.PurchaseCard(slotIndex);
+        }
     }
 }
