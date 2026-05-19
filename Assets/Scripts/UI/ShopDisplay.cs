@@ -28,7 +28,7 @@ public class ShopDisplay : MonoBehaviour
         }
 
         // Create UI for each card
-        foreach (int i = 0; i < cards.Count; i++)
+        for (int i = 0; i < cards.Count; i++)
         {
             Card card = cards[i];
             GameObject cardUI = Instantiate(shopCardPrefab, shopContent);
@@ -44,7 +44,12 @@ public class ShopDisplay : MonoBehaviour
             cardCostText.text = "Cost: " + card.cost + " peanuts";
 
             int slotIndex = i;
-            buyButton.onClick.AddListener(() => ShopManager.Instance.PurchaseCard(slotIndex));
+            buyButton.onClick.AddListener(() => OnBuyButtonClicked(slotIndex));
         }
+    }
+
+    private void OnBuyButtonClicked(int slotIndex)
+    {
+        ShopManager.Instance.PurchaseCard(slotIndex);
     }
 }
