@@ -66,13 +66,13 @@ public class ShopDisplay : MonoBehaviour
                 if (cardNameText != null)
                 {
                     cardNameText.text = card.cardName;
-                    cardNameText.fontSize = 24;
+                    cardNameText.fontSize = 20;
                     cardNameText.alignment = TextAlignmentOptions.Center;
                 }
                 
                 LayoutElement nameLayout = cardNameObj.GetComponent<LayoutElement>();
                 if (nameLayout == null) nameLayout = cardNameObj.gameObject.AddComponent<LayoutElement>();
-                nameLayout.preferredHeight = 40;
+                nameLayout.preferredHeight = 35;
             }
 
             if (cardDescObj != null)
@@ -81,14 +81,14 @@ public class ShopDisplay : MonoBehaviour
                 if (cardDescText != null)
                 {
                     cardDescText.text = card.description;
-                    cardDescText.fontSize = 14;
+                    cardDescText.fontSize = 12;
                     cardDescText.alignment = TextAlignmentOptions.Center;
                     cardDescText.wordWrappingRatios = 0.5f;
                 }
                 
                 LayoutElement descLayout = cardDescObj.GetComponent<LayoutElement>();
                 if (descLayout == null) descLayout = cardDescObj.gameObject.AddComponent<LayoutElement>();
-                descLayout.preferredHeight = 60;
+                descLayout.preferredHeight = 50;
             }
 
             if (cardCostObj != null)
@@ -97,13 +97,13 @@ public class ShopDisplay : MonoBehaviour
                 if (cardCostText != null)
                 {
                     cardCostText.text = "Cost: " + card.cost + " peanuts";
-                    cardCostText.fontSize = 16;
+                    cardCostText.fontSize = 14;
                     cardCostText.alignment = TextAlignmentOptions.Center;
                 }
                 
                 LayoutElement costLayout = cardCostObj.GetComponent<LayoutElement>();
                 if (costLayout == null) costLayout = cardCostObj.gameObject.AddComponent<LayoutElement>();
-                costLayout.preferredHeight = 30;
+                costLayout.preferredHeight = 25;
             }
 
             if (buyButtonObj != null)
@@ -114,10 +114,18 @@ public class ShopDisplay : MonoBehaviour
                     int slotIndex = i;
                     buyButton.onClick.AddListener(() => OnBuyButtonClicked(slotIndex));
                 }
+
+                // Set button text
+                TextMeshProUGUI buttonText = buyButtonObj.GetComponentInChildren<TextMeshProUGUI>();
+                if (buttonText != null)
+                {
+                    buttonText.text = "Buy";
+                    buttonText.fontSize = 16;
+                }
                 
                 LayoutElement buttonLayout = buyButtonObj.GetComponent<LayoutElement>();
                 if (buttonLayout == null) buttonLayout = buyButtonObj.gameObject.AddComponent<LayoutElement>();
-                buttonLayout.preferredHeight = 45;
+                buttonLayout.preferredHeight = 40;
             }
         }
     }
