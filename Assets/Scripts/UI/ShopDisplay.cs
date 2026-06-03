@@ -8,9 +8,13 @@ public class ShopDisplay : MonoBehaviour
     [SerializeField] private Transform shopContent; // Parent container for shop cards
     [SerializeField] private GameObject shopCardPrefab; // Prefab for individual shop card UI
     [SerializeField] private Button refreshButton; // Button to refresh shop
+    private SlotMachine slotMachine;
 
     private void Start()
     {
+        // Cache the SlotMachine reference
+        slotMachine = FindFirstObjectByType<SlotMachine>();
+        
         if (ShopManager.Instance != null)
         {
             ShopManager.Instance.OnShopRefreshed += DisplayShopCards;
@@ -142,7 +146,6 @@ public class ShopDisplay : MonoBehaviour
     private void OnCardPurchased(Card card)
     {
         // Add the card to the slot machine's active cards
-        SlotMachine slotMachine = FindObjectOfType<SlotMachine>();
         if (slotMachine != null)
         {
             slotMachine.AddActiveCard(card);
