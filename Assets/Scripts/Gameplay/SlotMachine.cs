@@ -34,6 +34,7 @@ public class SlotMachine : MonoBehaviour
     private bool isSpinning = false;
     private int[] currentReelValues = new int[3];
     private List<Card> activeCards = new List<Card>();
+    private int extraSpinsRemaining = 0;
 
     public delegate void SpinCompleteDelegate(int[] results, int winAmount);
     public event SpinCompleteDelegate OnSpinComplete;
@@ -110,11 +111,37 @@ public class SlotMachine : MonoBehaviour
             yield return null;
         }
 
-        // Set final random values
-        for (int i = 0; i < currentReelValues.Length; i++)
+        // Check for card effects that modify spin results
+        bool guaranteedWin = false;
+        foreach (Card card in activeCards)
         {
-            currentReelValues[i] = Random.Range(0, 4);
-            UpdateReelDisplay(i, currentReelValues[i]);
+            if (card.effect == CardEffect.GuaranteedWin)
+            {
+                guaranteedWin = true;
+                break;
+            }
+        }
+
+        // Set final values
+        if (guaranteedWin)
+        {
+            // Guaranteed win: make all reels match
+            int winningValue = Random.Range(0, 4);
+            for (int i = 0; i < currentReelValues.Length; i++)
+            {
+                currentReelValues[i] = winningValue;
+                UpdateReelDisplay(i, currentReelValues[i]);
+            }
+            Debug.Log("GuaranteedWin activated!");
+        }
+        else
+        {
+            // Random final values
+            for (int i = 0; i < currentReelValues.Length; i++)
+            {
+                currentReelValues[i] = Random.Range(0, 4);
+                UpdateReelDisplay(i, currentReelValues[i]);
+            }
         }
 
         int winAmount = CalculateWinnings(betAmount);
@@ -126,6 +153,13 @@ public class SlotMachine : MonoBehaviour
             {
                 PeanutManager.Instance.AddPeanuts(winAmount);
             }
+        }
+
+        // Handle extra spins
+        if (extraSpinsRemaining > 0)
+        {
+            extraSpinsRemaining--;
+            Debug.Log($"Extra spins remaining: {extraSpinsRemaining}");
         }
 
         isSpinning = false;
@@ -157,14 +191,37 @@ public class SlotMachine : MonoBehaviour
             {
                 case CardEffect.MultiplierBonus:
                     winAmount = (int)(winAmount * 1.25f);
+                    Debug.Log($"MultiplierBonus applied: {winAmount}");
                     break;
 
-                case CardEffect.PeanutMultiplier:
-                    winAmount *= 2;
+                case CardEffect.ExtraSpins:
+                    extraSpinsRemaining += 1;
+                    Debug.Log($"ExtraSpins granted: {extraSpinsRemaining} remaining");
+                    break;
+
+                case CardEffect.GuaranteedWin:
+                    // Already handled in SpinRoutine
+                    Debug.Log("GuaranteedWin effect applied");
                     break;
 
                 case CardEffect.DoubleOrNothing:
                     winAmount *= 2;
+                    Debug.Log($"DoubleOrNothing applied: {winAmount}");
+                    break;
+
+                case CardEffect.PeanutMultiplier:
+                    winAmount *= 2;
+                    Debug.Log($"PeanutMultiplier applied: {winAmount}");
+                    break;
+
+                case CardEffect.RerollReels:
+                    // Reroll would need to be handled in SpinRoutine
+                    Debug.Log("RerollReels effect (future implementation)");
+                    break;
+
+                case CardEffect.LuckyStreak:
+                    // Lucky streak would increase win chance for next spins
+                    Debug.Log("LuckyStreak effect (future implementation)");
                     break;
             }
         }
@@ -173,6 +230,7 @@ public class SlotMachine : MonoBehaviour
     public void AddActiveCard(Card card)
     {
         activeCards.Add(card);
+        Debug.Log($"Card added to slot machine: {card.cardName}");
     }
 
     public void RemoveActiveCard(Card card)
