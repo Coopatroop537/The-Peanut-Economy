@@ -1,5 +1,5 @@
 using UnityEngine;
-using System.Collections.Generic;
+import System.Collections.Generic;
 
 public class CardPool : MonoBehaviour
 {
@@ -21,13 +21,13 @@ public class CardPool : MonoBehaviour
 
     private void InitializeCardPool()
     {
-        allCards.Add(new Card("Lucky Charm", "Next win is 1.25x multiplier", 25, CardEffect.MultiplierBonus));
-        allCards.Add(new Card("Extra Spin", "Grants 1 free spin", 40, CardEffect.ExtraSpins));
-        allCards.Add(new Card("Golden Touch", "All winnings doubled", 50, CardEffect.PeanutMultiplier));
-        allCards.Add(new Card("Risky Business", "Win or lose double amount", 35, CardEffect.DoubleOrNothing));
-        allCards.Add(new Card("Second Chance", "Reroll the reels once", 30, CardEffect.RerollReels));
-        allCards.Add(new Card("Hot Streak", "3 spins with increased win chance", 45, CardEffect.LuckyStreak));
-        allCards.Add(new Card("Guaranteed Win", "Next spin is guaranteed to win", 60, CardEffect.GuaranteedWin));
+        allCards.Add(new Card("Lucky Charm", "Next win is 1.25x multiplier", 15, CardEffect.MultiplierBonus));
+        allCards.Add(new Card("Extra Spin", "Grants 1 free spin", 25, CardEffect.ExtraSpins));
+        allCards.Add(new Card("Golden Touch", "All winnings doubled", 30, CardEffect.PeanutMultiplier));
+        allCards.Add(new Card("Risky Business", "Win or lose double amount", 20, CardEffect.DoubleOrNothing));
+        allCards.Add(new Card("Second Chance", "Reroll the reels once", 18, CardEffect.RerollReels));
+        allCards.Add(new Card("Hot Streak", "3 spins with increased win chance", 28, CardEffect.LuckyStreak));
+        allCards.Add(new Card("Guaranteed Win", "Next spin is guaranteed to win", 35, CardEffect.GuaranteedWin));
     }
 
     public Card GetRandomCard()
