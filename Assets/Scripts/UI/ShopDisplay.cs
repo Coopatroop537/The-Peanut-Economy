@@ -14,6 +14,7 @@ public class ShopDisplay : MonoBehaviour
         if (ShopManager.Instance != null)
         {
             ShopManager.Instance.OnShopRefreshed += DisplayShopCards;
+            ShopManager.Instance.OnCardPurchased += OnCardPurchased;
         }
         
         if (refreshButton != null)
@@ -135,6 +136,21 @@ public class ShopDisplay : MonoBehaviour
         if (ShopManager.Instance != null)
         {
             ShopManager.Instance.PurchaseCard(slotIndex);
+        }
+    }
+
+    private void OnCardPurchased(Card card)
+    {
+        // Add the card to the slot machine's active cards
+        SlotMachine slotMachine = FindObjectOfType<SlotMachine>();
+        if (slotMachine != null)
+        {
+            slotMachine.AddActiveCard(card);
+            Debug.Log($"Card purchased: {card.cardName}");
+        }
+        else
+        {
+            Debug.LogError("SlotMachine not found in scene!");
         }
     }
 }
