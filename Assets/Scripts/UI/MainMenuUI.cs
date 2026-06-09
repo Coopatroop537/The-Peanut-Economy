@@ -28,6 +28,8 @@ public class MainMenuUI : MonoBehaviour
 
         // Set canvas size
         RectTransform canvasRect = canvasObj.GetComponent<RectTransform>();
+        canvasRect.anchorMin = Vector2.zero;
+        canvasRect.anchorMax = Vector2.one;
         canvasRect.offsetMin = Vector2.zero;
         canvasRect.offsetMax = Vector2.zero;
 
@@ -38,6 +40,8 @@ public class MainMenuUI : MonoBehaviour
         bgImage.color = new Color(0.1f, 0.1f, 0.15f, 1f);
         
         RectTransform bgRect = bgObj.GetComponent<RectTransform>();
+        bgRect.anchorMin = Vector2.zero;
+        bgRect.anchorMax = Vector2.one;
         bgRect.offsetMin = Vector2.zero;
         bgRect.offsetMax = Vector2.zero;
 
@@ -51,31 +55,42 @@ public class MainMenuUI : MonoBehaviour
         titleText.color = Color.white;
 
         RectTransform titleRect = titleObj.GetComponent<RectTransform>();
+        titleRect.anchorMin = new Vector2(0.5f, 0.5f);
+        titleRect.anchorMax = new Vector2(0.5f, 0.5f);
         titleRect.anchoredPosition = new Vector2(0, 300);
         titleRect.sizeDelta = new Vector2(1000, 200);
 
         // Create Play Button
-        playButton = CreateButton("Play", canvasObj.transform, new Vector2(0, 50), new Vector2(300, 100));
+        playButton = CreateButton("Play", canvasObj.transform, new Vector2(-200, 80));
         playButton.onClick.AddListener(PlayGame);
 
         // Create Quit Button
-        quitButton = CreateButton("Quit", canvasObj.transform, new Vector2(0, -100), new Vector2(300, 100));
+        quitButton = CreateButton("Quit", canvasObj.transform, new Vector2(200, 80));
         quitButton.onClick.AddListener(QuitGame);
     }
 
-    private Button CreateButton(string buttonText, Transform parent, Vector2 position, Vector2 size)
+    private Button CreateButton(string buttonText, Transform parent, Vector2 position)
     {
         // Create Button Container
         GameObject buttonObj = new GameObject($"{buttonText}Button");
         buttonObj.transform.SetParent(parent);
         
-        Button button = buttonObj.AddComponent<Button>();
         Image buttonImage = buttonObj.AddComponent<Image>();
         buttonImage.color = new Color(0.2f, 0.6f, 0.8f, 1f);
 
+        Button button = buttonObj.AddComponent<Button>();
+        button.targetGraphic = buttonImage;
+        
+        // Disable navigation
+        Navigation nav = button.navigation;
+        nav.mode = Navigation.Mode.None;
+        button.navigation = nav;
+
         RectTransform buttonRect = buttonObj.GetComponent<RectTransform>();
+        buttonRect.anchorMin = new Vector2(0.5f, 0.5f);
+        buttonRect.anchorMax = new Vector2(0.5f, 0.5f);
         buttonRect.anchoredPosition = position;
-        buttonRect.sizeDelta = size;
+        buttonRect.sizeDelta = new Vector2(250, 80);
 
         // Create Text
         GameObject textObj = new GameObject("Text");
@@ -83,11 +98,13 @@ public class MainMenuUI : MonoBehaviour
         
         TextMeshProUGUI text = textObj.AddComponent<TextMeshProUGUI>();
         text.text = buttonText;
-        text.fontSize = 40;
+        text.fontSize = 50;
         text.alignment = TextAlignmentOptions.Center;
         text.color = Color.white;
 
         RectTransform textRect = textObj.GetComponent<RectTransform>();
+        textRect.anchorMin = Vector2.zero;
+        textRect.anchorMax = Vector2.one;
         textRect.offsetMin = Vector2.zero;
         textRect.offsetMax = Vector2.zero;
 
@@ -96,6 +113,7 @@ public class MainMenuUI : MonoBehaviour
         colors.normalColor = new Color(0.2f, 0.6f, 0.8f, 1f);
         colors.highlightedColor = new Color(0.3f, 0.7f, 0.9f, 1f);
         colors.pressedColor = new Color(0.1f, 0.5f, 0.7f, 1f);
+        colors.selectedColor = new Color(0.3f, 0.7f, 0.9f, 1f);
         button.colors = colors;
 
         return button;
@@ -103,11 +121,13 @@ public class MainMenuUI : MonoBehaviour
 
     private void PlayGame()
     {
+        Debug.Log("Play button clicked!");
         SceneManager.LoadScene("SampleScene");
     }
 
     private void QuitGame()
     {
+        Debug.Log("Quit button clicked!");
         #if UNITY_EDITOR
             UnityEditor.EditorApplication.isPlaying = false;
         #else
