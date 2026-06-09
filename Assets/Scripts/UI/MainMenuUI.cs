@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using TMPro;
+using UnityEngine.EventSystems;
 
 public class MainMenuUI : MonoBehaviour
 {
@@ -17,6 +18,14 @@ public class MainMenuUI : MonoBehaviour
 
     private void CreateMainMenu()
     {
+        // Create EventSystem (REQUIRED for UI interaction)
+        if (FindObjectOfType<EventSystem>() == null)
+        {
+            GameObject eventSystemObj = new GameObject("EventSystem");
+            eventSystemObj.AddComponent<EventSystem>();
+            eventSystemObj.AddComponent<StandaloneInputModule>();
+        }
+
         // Create Canvas
         GameObject canvasObj = new GameObject("Canvas");
         canvas = canvasObj.AddComponent<Canvas>();
@@ -67,6 +76,10 @@ public class MainMenuUI : MonoBehaviour
         // Create Quit Button
         quitButton = CreateButton("Quit", canvasObj.transform, new Vector2(200, 80));
         quitButton.onClick.AddListener(QuitGame);
+
+        Debug.Log("Main menu created successfully!");
+        Debug.Log($"Play button listener count: {playButton.onClick.GetPersistentEventCount()}");
+        Debug.Log($"Quit button listener count: {quitButton.onClick.GetPersistentEventCount()}");
     }
 
     private Button CreateButton(string buttonText, Transform parent, Vector2 position)
@@ -81,7 +94,7 @@ public class MainMenuUI : MonoBehaviour
         Button button = buttonObj.AddComponent<Button>();
         button.targetGraphic = buttonImage;
         
-        // Disable navigation
+        // Setup proper navigation
         Navigation nav = button.navigation;
         nav.mode = Navigation.Mode.None;
         button.navigation = nav;
@@ -116,6 +129,7 @@ public class MainMenuUI : MonoBehaviour
         colors.selectedColor = new Color(0.3f, 0.7f, 0.9f, 1f);
         button.colors = colors;
 
+        Debug.Log($"{buttonText} button created at {position}");
         return button;
     }
 
